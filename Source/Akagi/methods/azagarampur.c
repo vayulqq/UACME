@@ -1,12 +1,12 @@
 /*******************************************************************************
 *
-*  (C) COPYRIGHT AUTHORS, 2020 - 2025
+*  (C) COPYRIGHT AUTHORS, 2020 - 2026
 *
 *  TITLE:       AZAGARAMPUR.C
 *
-*  VERSION:     3.69
+*  VERSION:     3.70
 *
-*  DATE:        07 Jul 2025
+*  DATE:        07 May 2026
 *
 *  UAC bypass methods from AzAgarampur.
 *
@@ -253,8 +253,7 @@ NTSTATUS ucmNICPoisonMethod(
             WriteFile(hFile, ProxyDll, ProxyDllSize, &bytesIO, NULL);
             SetEndOfFile(hFile);
             CloseHandle(hFile);
-        }
-        else
+        } else
             break;
 
         //
@@ -1406,6 +1405,8 @@ typedef struct _PCA_LOADER_BLOCK {
 * Bypass UAC using Program Compatibility Assistant.
 *
 * AlwaysNotify compatible.
+* 
+* Fixed in Windows 11.
 *
 */
 NTSTATUS ucmPcaMethod(

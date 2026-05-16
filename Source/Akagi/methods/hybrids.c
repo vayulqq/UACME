@@ -1,12 +1,12 @@
 /*******************************************************************************
 *
-*  (C) COPYRIGHT AUTHORS, 2015 - 2025
+*  (C) COPYRIGHT AUTHORS, 2015 - 2026
 *
 *  TITLE:       HYBRIDS.C
 *
-*  VERSION:     3.69
+*  VERSION:     3.70
 *
-*  DATE:        07 Jul 2025
+*  DATE:        07 May 2026
 *
 *  Hybrid UAC bypass methods.
 *
@@ -195,6 +195,8 @@ NTSTATUS ucmGenericAutoelevation(
 *
 * Maybe you think it is handy cool feature, but I think its another backdoor from lazy dotnet crew.
 * "You keep shipping crap, and crap, and more crap".
+* 
+* Fixed in Windows 11.
 *
 */
 NTSTATUS ucmSXSMethod(
@@ -393,7 +395,7 @@ BOOL ucmSXSMethodCleanup(
 }
 
 /*
-* ucmxDisemer
+* ucmDisemerMethod
 *
 * Purpose:
 *
@@ -403,7 +405,7 @@ BOOL ucmSXSMethodCleanup(
 * Name is a very original WD behavior signature name.
 *
 */
-NTSTATUS ucmxDisemer()
+NTSTATUS ucmDisemerMethod()
 {
     WCHAR szApplication[MAX_PATH * 2];
     WCHAR szParameters[256];
@@ -487,7 +489,7 @@ NTSTATUS ucmDismMethod(
             ProxyDllSize);
 
         if (NT_SUCCESS(MethodResult)) {
-            MethodResult = ucmxDisemer();
+            MethodResult = ucmDisemerMethod();
         }
 
         //
@@ -516,6 +518,8 @@ NTSTATUS ucmDismMethod(
 *
 * Trigger: 32bit version of wusa.exe
 * Loader will map and call our logger dll during wow64 process initialization.
+*
+* Fixed in Windows 11.
 *
 */
 NTSTATUS ucmWow64LoggerMethod(
@@ -664,6 +668,7 @@ NTSTATUS ucmUiAccessMethod(
 *
 * Similar to ucmSXSMethod, except using different target app and dll.
 * Dccw idea by Ernesto Fernandez (https://github.com/L3cr0f/DccwBypassUAC)
+* Fixed in Windows 11.
 *
 */
 NTSTATUS ucmSXSDccwMethod(
@@ -1055,6 +1060,8 @@ NTSTATUS ucmDccwCOMMethod(
 * 2) Disemer
 *
 * Wusa race condition in combination with junctions found by Thomas Vanhoutte.
+* 
+* Fixed in Windows 11.
 *
 */
 NTSTATUS ucmJunctionMethod(
@@ -1094,7 +1101,7 @@ NTSTATUS ucmJunctionMethod(
                 //
                 // Run target.
                 //
-                MethodResult = ucmxDisemer();
+                MethodResult = ucmDisemerMethod();
 
             }
 
@@ -1209,6 +1216,8 @@ NTSTATUS ucmMsdtMethod(
 * Purpose:
 *
 * Bypass UAC using DotNet Deserialization for eventvwr.
+* 
+* Fixed in Windows 11.
 *
 */
 NTSTATUS ucmDotNetSerialMethod(
@@ -1398,6 +1407,8 @@ NTSTATUS ucmIscsiCplMethod(
 *
 * Bypass UAC by environment variables hijack and dll planting.
 * https://github.com/R41N3RZUF477/RequestTrace_UAC_Bypass
+* 
+* Fixed in Windows 11.
 *
 */
 NTSTATUS ucmRequestTraceMethod(

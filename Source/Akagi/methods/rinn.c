@@ -1,12 +1,12 @@
 /*******************************************************************************
 *
-*  (C) COPYRIGHT AUTHORS, 2018 - 2025
+*  (C) COPYRIGHT AUTHORS, 2018 - 2026
 *
 *  TITLE:       RINN.C
 *
-*  VERSION:     3.69
+*  VERSION:     3.70
 *
-*  DATE:        07 Jul 2025
+*  DATE:        07 May 2026
 *
 *  FBK UAC bypass methods.
 *
@@ -32,6 +32,8 @@
 * environment variable "windir" to expand Windows directory instead of using something like GetSystemDirectory.
 * This giving us opportunity (hello Nadela) to spoof current user environment variable for requested DllHost.exe
 * thus turning their code launch our clipup.exe from our controlled location.
+* 
+* Fixed in Windows 11.
 *
 */
 NTSTATUS ucmEditionUpgradeManagerMethod(

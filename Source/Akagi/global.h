@@ -1,12 +1,12 @@
 /*******************************************************************************
 *
-*  (C) COPYRIGHT AUTHORS, 2014 - 2023
+*  (C) COPYRIGHT AUTHORS, 2014 - 2026
 *
 *  TITLE:       GLOBAL.H
 *
-*  VERSION:     3.65
+*  VERSION:     3.70
 *
-*  DATE:        22 Sep 2023
+*  DATE:        15 May 2026
 *
 *  Common header file for the program support routines.
 *
@@ -65,14 +65,11 @@
 #define SECURITY_WIN32
 #include <Security.h>
 
+#include <strsafe.h>
+
 #pragma comment(lib, "taskschd.lib")
 #pragma comment(lib, "rpcrt4.lib")
 #pragma comment (lib, "Secur32.lib")
-
-#pragma warning(push)
-#pragma warning(disable: 4115) //named type definition in parentheses
-#include <fusion.h>
-#pragma warning(pop)
 
 #include "shared\hde\hde64.h"
 #include "shared\ntos\ntos.h"

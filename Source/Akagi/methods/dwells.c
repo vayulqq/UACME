@@ -1,12 +1,12 @@
 /*******************************************************************************
 *
-*  (C) COPYRIGHT AUTHORS, 2018 - 2020
+*  (C) COPYRIGHT AUTHORS, 2018 - 2026
 *
 *  TITLE:       DWELLS.C
 *
-*  VERSION:     3.50
+*  VERSION:     3.70
 *
-*  DATE:        14 Sep 2020
+*  DATE:        07 May 2026
 *
 *  David Wells based method.
 *
@@ -27,6 +27,8 @@
 * Purpose:
 *
 * UAC bypass abusing GetLongPathNameW behavior during AIS.
+* 
+* Fixed in Windows 11 24H2/25H2.
 *
 */
 NTSTATUS ucmDirectoryMockMethod(

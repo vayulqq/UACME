@@ -1,12 +1,12 @@
 /*******************************************************************************
 *
-*  (C) COPYRIGHT AUTHORS, 2014 - 2025
+*  (C) COPYRIGHT AUTHORS, 2014 - 2026
 *
 *  TITLE:       ROUTINES.H
 *
-*  VERSION:     3.68
+*  VERSION:     3.70
 *
-*  DATE:        07 Mar 2025
+*  DATE:        07 May 2026
 *
 *  Prototypes of methods for UAC bypass methods table.
 *
@@ -186,6 +186,8 @@ NTSTATUS ucmRequestTraceMethod(
 NTSTATUS ucmQuickAssistMethod(
     _In_ PVOID ProxyDll,
     _In_ DWORD ProxyDllSize);
+
+NTSTATUS ucmDisemerMethod();
 
 //
 // Post execution cleanup routines.

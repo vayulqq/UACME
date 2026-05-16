@@ -258,8 +258,8 @@ akagi64.exe 61 c:\windows\system32\charmap.exe
      * Component(s): comctl32.dll
      * Implementation: ucmSXSMethod
      * Works from: Windows 7 (7600)
-     * Fixed in: unfixed :see_no_evil:
-        * How: -
+     * Fixed in: Windows 11 24H2/25H2 (26100/26200)
+        * How: Internal Windows loader changes, consent!MitigationPolicy->ProcessSignaturePolicy->MicrosoftSignedOnly
       * Code status: added in v2.5.0
 23. Author: Leo Davidson derivative
      * Type: Dll Hijack
@@ -339,8 +339,8 @@ akagi64.exe 61 c:\windows\system32\charmap.exe
      * Component(s): wow64log.dll
      * Implementation: ucmWow64LoggerMethod
      * Works from: Windows 7 (7600)
-     * Fixed in: unfixed :see_no_evil:
-        * How: -
+     * Fixed in: Windows 11 24H2/25H2 (26100/26200)
+        * How: Internal Windows loader changes
       * Code status: added in v2.7.0
 31. Author: Enigma0x3
      * Type: Shell API
@@ -401,8 +401,8 @@ akagi64.exe 61 c:\windows\system32\charmap.exe
      * Component(s): Attacker defined
      * Implementation: ucmJunctionMethod
      * Works from: Windows 7 (7600)
-     * Fixed in: unfixed :see_no_evil:
-        * How: -
+     * Fixed in: Windows 11 24H2/25H2 (26100/26200)
+        * How: WUSA changes
       * Code status: added in v2.7.4
 37. Author: Ernesto Fernandez, Thomas Vanhoutte
      * Type: Dll Hijack
@@ -411,8 +411,8 @@ akagi64.exe 61 c:\windows\system32\charmap.exe
      * Component(s): GdiPlus.dll
      * Implementation: ucmSXSDccwMethod
      * Works from: Windows 7 (7600)
-     * Fixed in: unfixed :see_no_evil:
-        * How: -
+     * Fixed in: Windows 11 24H2/25H2 (26100/26200)
+        * How: Internal Windows loader changes, WUSA changes
       * Code status: added in v2.7.5
 38. Author: Clement Rouault
      * Type: Whitelisted component
@@ -561,8 +561,8 @@ akagi64.exe 61 c:\windows\system32\charmap.exe
      * Component(s): Attacker defined
      * Implementation: ucmDirectoryMockMethod
      * Works from: Windows 7 (7600)
-     * Fixed in: unfixed :see_no_evil:
-        * How: -		
+     * Fixed in: Windows 11 24H2/25H2 (26100/26200)
+        * How: appinfo changes		
       * Code status: added in v3.0.4
 53. Author: Emeric Nasi
      * Type: Shell API
@@ -621,8 +621,8 @@ akagi64.exe 61 c:\windows\system32\charmap.exe
      * Component(s): Attacker defined
      * Implementation: ucmEditionUpgradeManagerMethod
      * Works from: Windows 10 (14393)
-     * Fixed in: unfixed :see_no_evil:
-        * How: -
+     * Fixed in: Windows 11 24H2/25H2 (26100/26200)
+        * How: Current user environment variable %windir% ignored
       * Code status: added in v3.2.0
 59. Author: James Forshaw
      * Type: AppInfo ALPC
@@ -732,8 +732,8 @@ akagi64.exe 61 c:\windows\system32\charmap.exe
      * Implementation: ucmPcaMethod
      * Works from: Windows 7 (7600)
      * AlwaysNotify compatible
-     * Fixed in: unfixed :see_no_evil:
-        * How: -
+     * Fixed in: Windows 11 24H2/25H2 (26100)
+        * How: Current user environment variable %windir% ignored
       * Code status: added in v3.5.6
 70. Author: V3ded
      * Type: Shell API
@@ -772,8 +772,8 @@ akagi64.exe 61 c:\windows\system32\charmap.exe
      * Component(s): Attacker defined
      * Implementation: ucmDotNetSerialMethod
      * Works from: Windows 7 RTM (7600)
-     * Fixed in: unfixed :see_no_evil:
-        * How: -
+     * Fixed in: Windows 11 24H2/25H2 (26100)
+        * How: EventViewer redesign
       * Code status: added in v3.6.0
 74. Author: zcgonvh
      * Type: Elevated COM interface
@@ -844,8 +844,8 @@ akagi64.exe 61 c:\windows\system32\charmap.exe
      * Implementation: ucmRequestTraceMethod
      * Works from: Windows 11 (26100)
      * AlwaysNotify compatible
-     * Fixed in: unfixed :see_no_evil:
-        * How: -
+     * Fixed in: Windows 11 25H2 (26200)
+        * How: Side effect of Windows changes
       * Code status: added in v3.6.7
 81. Author: R41N3RZUF477
      * Type: Shell API
