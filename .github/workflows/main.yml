@@ -62,6 +62,5 @@ jobs:
       with:
         name: UACME-Release-x64
         path: |
-          Source/output/x64/Release/Akagi.exe
-          Source/Akagi/Bin/
+          Source/**/*
         if-no-files-found: warn
