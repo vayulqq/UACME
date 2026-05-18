@@ -5,7 +5,7 @@ on:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
-  workflow_dispatch: # Позволяет запускать сборку вручную через интерфейс GitHub
+  workflow_dispatch:
 
 jobs:
   build:
@@ -16,31 +16,30 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 2. Настраиваем MSBuild в окружении
+    # 2. Настраиваем MSBuild
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
-    # 3. Компилируем модули-полезные нагрузки (Payload units)
-    # Используются имена проектов из вашего файла решения: Fubuki, Yuubari, Akatsuki
+    # 3. Компилируем модули-полезные нагрузки напрямую через файлы проектов (.vcxproj)
     - name: Compile payload units
       run: |
-        msbuild Source/uacme.sln -t:NanoDesu_Fubuki -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
-        msbuild Source/uacme.sln -t:Yuubari -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
-        msbuild Source/uacme.sln -t:NanoDesu_Akatsuki -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+        msbuild Source/Fubuki/dll.vcxproj -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+        msbuild Source/Yuubari/Yuubari.vcxproj -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+        msbuild Source/Akatsuki/Akatsuki.vcxproj -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
 
-    # 4. Компилируем модуль Naka
+    # 4. Компилируем модуль Naka напрямую
     - name: Compile Naka module
-      run: msbuild Source/uacme.sln -t:NanoDesu_Naka -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+      run: msbuild Source/Naka/Naka.vcxproj -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
 
-    # 5. Шифрование и генерация секретных блобов с помощью модуля Naka
-    # Внимание: настройте пути к скомпилированному Naka.exe и флагам под вашу архитектуру, если необходимо
+    # 5. Шифрование и генерация секретных блобов с помощью скомпилированного модуля Naka
     - name: Encrypt payloads and generate secret blobs
       shell: pwsh
       run: |
         echo "Запуск шифрования через Naka..."
-        # Пример вызова (измените путь к бинарнику, если он собирается в другую директорию):
-        # & .\Source\x64\Release\Naka.exe
-        
+        # На основе лога Yuubari, исполняемые файлы собираются в [ИмяПроекта]\output\x64\Release\
+        # Если Naka генерирует блобы автоматически при запуске, раскомментируйте строку ниже:
+        # & .\Source\Naka\output\x64\Release\Naka.exe
+
     # 6. Перемещение скомпилированных модулей и блобов в директорию Akagi\Bin
     - name: Move compiled units and secret blobs to Akagi Bin directory
       shell: pwsh
@@ -49,21 +48,21 @@ jobs:
         if (!(Test-Path $binDir)) {
             New-Item -ItemType Directory -Path $binDir -Force
         }
-        echo "Перемещение файлов в $binDir..."
-        # Раскомментируйте и настройте строки ниже в зависимости от того, где лежат ваши блобы:
-        # Copy-Item -Path "Source/x64/Release/Fubuki.dll" -Destination "$binDir/"
-        # Copy-Item -Path "Source/x64/Release/*.wim" -Destination "$binDir/"
+        echo "Перемещение зашифрованных модулей и блобов в $binDir..."
+        # Скопируйте сюда файлы полезных нагрузок и блобы, полученные после шага 5. Например:
+        # Copy-Item -Path "Source/Fubuki/output/x64/Release/Fubuki.dll" -Destination "$binDir/"
+        # Copy-Item -Path "Source/Yuubari/output/x64/Release/UacInfo64.exe" -Destination "$binDir/"
 
-    # 7. Пересборка (Rebuild) основного модуля Akagi
+    # 7. Пересборка (Rebuild) основного проекта Akagi
     - name: Rebuild Akagi
-      run: msbuild Source/uacme.sln -t:Akagi:Rebuild -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+      run: msbuild Source/Akagi/uacme.vcxproj -t:Rebuild -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
 
-# 8. СОХРАНЕНИЕ АРТЕФАКТОВ СБОРКИ
+    # 8. Сохранение результатов сборки в артефакты GitHub
     - name: Upload Compiled Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: UACME-Release-x64
         path: |
-          Source/x64/Release/Akagi.exe
+          Source/Akagi/output/x64/Release/
           Source/Akagi/Bin/
         if-no-files-found: warn
