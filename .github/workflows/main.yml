@@ -1,0 +1,69 @@
+name: Build UACME Solution
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # Позволяет запускать сборку вручную через интерфейс GitHub
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+    # 1. Клонируем репозиторий
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Настраиваем MSBuild в окружении
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    # 3. Компилируем модули-полезные нагрузки (Payload units)
+    # Используются имена проектов из вашего файла решения: Fubuki, Yuubari, Akatsuki
+    - name: Compile payload units
+      run: |
+        msbuild Source/uacme.sln -t:Fubuki -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+        msbuild Source/uacme.sln -t:Yuubari -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+        msbuild Source/uacme.sln -t:Akatsuki -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+
+    # 4. Компилируем модуль Naka
+    - name: Compile Naka module
+      run: msbuild Source/uacme.sln -t:Naka -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+
+    # 5. Шифрование и генерация секретных блобов с помощью модуля Naka
+    # Внимание: настройте пути к скомпилированному Naka.exe и флагам под вашу архитектуру, если необходимо
+    - name: Encrypt payloads and generate secret blobs
+      shell: pwsh
+      run: |
+        echo "Запуск шифрования через Naka..."
+        # Пример вызова (измените путь к бинарнику, если он собирается в другую директорию):
+        # & .\Source\x64\Release\Naka.exe
+        
+    # 6. Перемещение скомпилированных модулей и блобов в директорию Akagi\Bin
+    - name: Move compiled units and secret blobs to Akagi Bin directory
+      shell: pwsh
+      run: |
+        $binDir = "Source/Akagi/Bin"
+        if (!(Test-Path $binDir)) {
+            New-Item -ItemType Directory -Path $binDir -Force
+        }
+        echo "Перемещение файлов в $binDir..."
+        # Раскомментируйте и настройте строки ниже в зависимости от того, где лежат ваши блобы:
+        # Copy-Item -Path "Source/x64/Release/Fubuki.dll" -Destination "$binDir/"
+        # Copy-Item -Path "Source/x64/Release/*.wim" -Destination "$binDir/"
+
+    # 7. Пересборка (Rebuild) основного модуля Akagi
+    - name: Rebuild Akagi
+      run: msbuild Source/uacme.sln -t:Akagi -t:Rebuild -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+
+# 8. СОХРАНЕНИЕ АРТЕФАКТОВ СБОРКИ
+    - name: Upload Compiled Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: UACME-Release-x64
+        path: |
+          Source/x64/Release/Akagi.exe
+          Source/Akagi/Bin/
+        if-no-files-found: warn
