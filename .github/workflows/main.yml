@@ -24,13 +24,13 @@ jobs:
     # Используются имена проектов из вашего файла решения: Fubuki, Yuubari, Akatsuki
     - name: Compile payload units
       run: |
-        msbuild Source/uacme.sln -t:Fubuki -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+        msbuild Source/uacme.sln -t:NanoDesu_Fubuki -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
         msbuild Source/uacme.sln -t:Yuubari -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
-        msbuild Source/uacme.sln -t:Akatsuki -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+        msbuild Source/uacme.sln -t:NanoDesu_Akatsuki -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
 
     # 4. Компилируем модуль Naka
     - name: Compile Naka module
-      run: msbuild Source/uacme.sln -t:Naka -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+      run: msbuild Source/uacme.sln -t:NanoDesu_Naka -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
 
     # 5. Шифрование и генерация секретных блобов с помощью модуля Naka
     # Внимание: настройте пути к скомпилированному Naka.exe и флагам под вашу архитектуру, если необходимо
@@ -56,7 +56,7 @@ jobs:
 
     # 7. Пересборка (Rebuild) основного модуля Akagi
     - name: Rebuild Akagi
-      run: msbuild Source/uacme.sln -t:Akagi -t:Rebuild -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+      run: msbuild Source/uacme.sln -t:Akagi:Rebuild -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
 
 # 8. СОХРАНЕНИЕ АРТЕФАКТОВ СБОРКИ
     - name: Upload Compiled Artifacts
