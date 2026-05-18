@@ -20,27 +20,27 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
-    # 3. Компилируем модули-полезные нагрузки напрямую через файлы проектов (.vcxproj)
+    # 3. Компилируем модули-полезные нагрузки через файл решения (.sln), используя SelectedTargets
+    # Это решает проблему путей включения (Include Paths) и обходит вложенные папки NanoDesu
     - name: Compile payload units
       run: |
-        msbuild Source/Fubuki/dll.vcxproj -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
-        msbuild Source/Yuubari/Yuubari.vcxproj -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
-        msbuild Source/Akatsuki/Akatsuki.vcxproj -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+        msbuild Source/uacme.sln -p:SelectedTargets=Fubuki -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+        msbuild Source/uacme.sln -p:SelectedTargets=Yuubari -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+        msbuild Source/uacme.sln -p:SelectedTargets=Akatsuki -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
 
-    # 4. Компилируем модуль Naka напрямую
+    # 4. Компилируем модуль Naka через файл решения
     - name: Compile Naka module
-      run: msbuild Source/Naka/Naka.vcxproj -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+      run: msbuild Source/uacme.sln -p:SelectedTargets=Naka -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
 
-    # 5. Шифрование и генерация секретных блобов с помощью скомпилированного модуля Naka
+    # 5. Шифрование и генерация секретных блобов
     - name: Encrypt payloads and generate secret blobs
       shell: pwsh
       run: |
         echo "Запуск шифрования через Naka..."
-        # На основе лога Yuubari, исполняемые файлы собираются в [ИмяПроекта]\output\x64\Release\
-        # Если Naka генерирует блобы автоматически при запуске, раскомментируйте строку ниже:
-        # & .\Source\Naka\output\x64\Release\Naka.exe
+        # При необходимости раскомментируйте строку вызова Naka.exe:
+        # & .\Source\output\x64\Release\Naka.exe
 
-    # 6. Перемещение скомпилированных модулей и блобов в директорию Akagi\Bin
+    # 6. Создание директории Akagi\Bin и копирование зависимостей
     - name: Move compiled units and secret blobs to Akagi Bin directory
       shell: pwsh
       run: |
@@ -48,21 +48,20 @@ jobs:
         if (!(Test-Path $binDir)) {
             New-Item -ItemType Directory -Path $binDir -Force
         }
-        echo "Перемещение зашифрованных модулей и блобов в $binDir..."
-        # Скопируйте сюда файлы полезных нагрузок и блобы, полученные после шага 5. Например:
-        # Copy-Item -Path "Source/Fubuki/output/x64/Release/Fubuki.dll" -Destination "$binDir/"
-        # Copy-Item -Path "Source/Yuubari/output/x64/Release/UacInfo64.exe" -Destination "$binDir/"
+        echo "Перемещение файлов в $binDir..."
+        # При сборке через .sln файлы складываются в единую корневую выходную папку Source/output/
+        # Copy-Item -Path "Source/output/x64/Release/Fubuki.dll" -Destination "$binDir/"
 
-    # 7. Пересборка (Rebuild) основного проекта Akagi
+    # 7. Финальная сборка основного модуля Akagi
     - name: Rebuild Akagi
-      run: msbuild Source/Akagi/uacme.vcxproj -t:Rebuild -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
+      run: msbuild Source/uacme.sln -p:SelectedTargets=Akagi -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v143 -p:WindowsTargetPlatformVersion=10.0
 
-    # 8. Сохранение результатов сборки в артефакты GitHub
+    # 8. Сохранение артефактов
     - name: Upload Compiled Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: UACME-Release-x64
         path: |
-          Source/Akagi/output/x64/Release/
+          Source/output/x64/Release/Akagi.exe
           Source/Akagi/Bin/
         if-no-files-found: warn
